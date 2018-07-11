@@ -22,7 +22,7 @@ data_params:
 
   # 预训练特征向量路径, 按feature_names顺序设置, 没有预训练向量则设为null
   path_pretrain:
-    - ./data/resources/glove.6B.100d.bin  # 格式为bin或txt
+    - ./data/resources/glove.6B.100d.txt  # 格式为bin或txt
     - null
     - null
 
@@ -68,7 +68,7 @@ model_params:
   nb_epoch: 1000
   average_batch: false
 
-  use_cuda: true
+  use_cuda: false
   deterministic: false
 
 word_norm: true  # word normalization

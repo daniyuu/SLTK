@@ -9,9 +9,19 @@
     $ sudo pip3 install -r requirements.txt --upgrade  # for all user
     $ pip3 install -r requirements.txt --upgrade --user  # for current user
 
+    conda install pytorch -c pytorch
+    pip3 install torchvision
+
+    conda install -c anaconda gensim
+
+    conda install -c anaconda h5py
+
+    conda install -c anaconda numpy
+
+    conda install -c anaconda pyyaml
 ### 1.2 预处理&训练
 
-    $ CUDA_VISIBLE_DEVICES=0 python3 main.py --config ./configs/word.yml -p --train
+    $ CUDA_VISIBLE_DEVICES=0 python3 main.py --config ./configs/word.yml -p --preprocess --train
 
 ### 1.3 训练
 
