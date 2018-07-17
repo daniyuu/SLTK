@@ -1,0 +1,1 @@
+python main.py --config ./configs/common_ner.yml -p --preprocess --train
