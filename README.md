@@ -12,26 +12,20 @@
     conda install pytorch -c pytorch
     pip3 install torchvision
 
-    conda install -c anaconda gensim
-
-    conda install -c anaconda h5py
-
-    conda install -c anaconda numpy
-
-    conda install -c anaconda pyyaml
+    conda install -c anaconda gensim h5py numpy pyyaml
 ### 1.2 预处理&训练
 
-    $ CUDA_VISIBLE_DEVICES=0 python3 main.py --config ./configs/word.yml -p --preprocess --train
+    $ CUDA_VISIBLE_DEVICES=0 python3 main.py --config ./configs/common_ner.yml -p --preprocess --train
 
 ### 1.3 训练
 
 若已经完成了预处理，则可直接进行训练:
 
-    $ CUDA_VISIBLE_DEVICES=0 python3 main.py --config ./configs/word.yml --train
+    $ CUDA_VISIBLE_DEVICES=0 python3 main.py --config ./configs/common_ner.yml --train
 
 ### 1.4 测试
 
-    $ CUDA_VISIBLE_DEVICES=0 python3 main.py --config ./configs/word.yml --test
+    $ CUDA_VISIBLE_DEVICES=0 python3 main.py --config ./configs/common_ner.yml --test
 
 
 ## 2. 配置文件说明
