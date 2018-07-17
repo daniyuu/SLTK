@@ -12,7 +12,7 @@
     conda install pytorch -c pytorch
     pip3 install torchvision
 
-    conda install -c anaconda gensim h5py numpy pyyaml
+    conda install -c anaconda gensim h5py numpy pyyaml tornado 
 ### 1.2 预处理&训练
 
     $ CUDA_VISIBLE_DEVICES=0 python main.py --config ./configs/demo.yml -p --preprocess --train

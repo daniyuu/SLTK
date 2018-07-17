@@ -18,7 +18,7 @@ data_params:
   # alphabet参数及存放路径
   alphabet_params:
     min_counts: [0]
-    path: ./data/alphabet/  # 特征字典存放根目录
+    path: ./data/CommonNER/alphabet/  # 特征字典存放根目录
 
   # 预训练特征向量路径, 按feature_names顺序设置, 没有预训练向量则设为null
   path_pretrain:
