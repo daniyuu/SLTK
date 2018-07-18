@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-import sys
 import codecs
+import sys
+
 import torch
 
 from ..utils import read_conllu
@@ -52,9 +53,10 @@ class Inference(object):
 
             logits = self.model(**feed_tensor_dict)
             # mask
-            mask = feed_tensor_dict[str(self.feature_names[0])] > 0
-            actual_lens = torch.sum(feed_tensor_dict[self.feature_names[0]] > 0, dim=1).int()
-            labels_batch = self.model.predict(logits, actual_lens, mask)
+            mask = feed_tensor_dict[str(self.model.feature_names[0])] > 0
+            actual_lens = torch.sum(feed_tensor_dict[self.model.feature_names[0]] > 0, dim=1).int()
+            label_ids_batch = self.model.predict(logits, actual_lens, mask)
+            labels_batch = self.id2label(label_ids_batch)
             labels_pred.extend(labels_batch)
             sys.stdout.write('sentence: {0} / {1}\r'.format(self.data_iter.iter_variable, self.data_iter.data_count))
         sys.stdout.write('sentence: {0} / {1}\n'.format(self.data_iter.data_count, self.data_iter.data_count))
@@ -84,7 +86,7 @@ class Inference(object):
                 sent_len = len(feature_items)  # 句子实际长度
                 labels = labels_batch[i]
                 if len(labels) < sent_len:  # 补全为`O`
-                    labels = labels + ['O'] * (sent_len-len(labels))
+                    labels = labels + ['O'] * (sent_len - len(labels))
                 for j in range(sent_len):
                     file_result.write('{0} {1}\n'.format(' '.join(feature_items[j]), labels[j]))
                 file_result.write('\n')
@@ -128,4 +130,3 @@ class Inference(object):
         if use_cuda:
             data = data.cuda()
         return data
-
