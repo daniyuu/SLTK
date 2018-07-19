@@ -18,32 +18,29 @@ Usage:
     $ CUDA_VISIBLE_DEVICES=0 python3 main.py --config ./configs/demo.train.yml --test
 
 """
+import codecs
+import logging
 import os
 import sys
-import codecs
-from string import ascii_letters, digits
 from collections import Counter
-import yaml
+from optparse import OptionParser
+from string import ascii_letters, digits
+
 import h5py
 import numpy as np
-
-from optparse import OptionParser
-
-from sltk.preprocessing import normalize_word
-
-from sltk.utils import read_conllu
-from sltk.utils import build_word_embed
-from sltk.utils import tokens2id_array
-from sltk.utils import check_parent_dir, object2pkl_file, read_bin
-
-from sltk.data import DataIter, DataUtil
-
-from sltk.nn.modules import SLModel
-from sltk.train import SLTrainer
-from sltk.infer import Inference
-
 import torch
 import torch.optim as optim
+import yaml
+
+from sltk.data import DataIter, DataUtil
+from sltk.infer import Inference
+from sltk.nn.modules import SLModel
+from sltk.preprocessing import normalize_word
+from sltk.train import SLTrainer
+from sltk.utils import build_word_embed
+from sltk.utils import check_parent_dir, object2pkl_file, read_bin
+from sltk.utils import read_conllu
+from sltk.utils import tokens2id_array
 
 
 def parse_opts():
@@ -124,6 +121,7 @@ def data2hdf5(path_data, data_count, feature_cols, feature_names, token2id_dict,
         has_label: bool, 数据是否带有标签
         normalize: bool, 是否标准化单词
     """
+
     def padding_char(word, max_word_len):
         """
         截图长单词、补全短单词
@@ -135,7 +133,7 @@ def data2hdf5(path_data, data_count, feature_cols, feature_names, token2id_dict,
         """
         if len(word) > max_word_len:
             half = int(max_word_len // 2)
-            word = word[:half] + word[-(max_word_len-half):]
+            word = word[:half] + word[-(max_word_len - half):]
             return word
         return word + ' ' * (max_word_len - len(word))
 
@@ -170,7 +168,7 @@ def data2hdf5(path_data, data_count, feature_cols, feature_names, token2id_dict,
         if has_label:
             label_arr = tokens2id_array(tokens_list[-1], token2id_dict['label'])
             dataset_dict['label'][i] = label_arr
-    sys.stdout.write('`{0}`: {1}\n'.format(path_hdf5, i+1))
+    sys.stdout.write('`{0}`: {1}\n'.format(path_hdf5, i + 1))
     sys.stdout.flush()
 
     file_hdf5.close()
@@ -204,6 +202,7 @@ def preprocessing(configs):
 
     # 处理训练、开发、测试数据
     print('读取文件...')
+    logger.info("loading files...")
     data_count_train = extract_feature_dict(
         path_train, feature_cols, feature_names, feature_dict, sentence_lens,
         normalize=normalize, has_label=True, )
@@ -261,7 +260,7 @@ def preprocessing(configs):
         if path_pretrain_list[i]:
             print('特征`{0}`使用预训练词向量`{1}`:'.format(feature_name, path_pretrain_list[i]))
             word_embed_table, exact_match_count, fuzzy_match_count, unknown_count, \
-                total_count = build_word_embed(token2id_dict[feature_name], path_pretrain_list[i])
+            total_count = build_word_embed(token2id_dict[feature_name], path_pretrain_list[i])
             print('\t精确匹配: {0} / {1}'.format(exact_match_count, total_count))
             print('\t模糊匹配: {0} / {1}'.format(fuzzy_match_count, total_count))
             print('\tOOV: {0} / {1}'.format(unknown_count, total_count))
@@ -397,7 +396,7 @@ def init_train_data(configs):
         data_utils = DataUtil(
             train_count, train_object_dict, data_names, use_char=use_char, char_max_len=char_max_len,
             batch_size=batch_size, max_len_limit=max_len_limit)
-        data_iter_train, data_iter_dev = data_utils.split_dataset(proportions=(1-dev_size, dev_size), shuffle=False)
+        data_iter_train, data_iter_dev = data_utils.split_dataset(proportions=(1 - dev_size, dev_size), shuffle=False)
     else:
         path_data = configs['data_params']['path_dev'] + '.hdf5'
         dev_object_dict_ = h5py.File(path_data, 'r')
@@ -551,7 +550,7 @@ def test_model(configs):
     # init infer
     path_conllu_test = configs['data_params']['path_test']
     if 'path_test_result' not in configs['data_params'] or \
-       not configs['data_params']['path_test_result']:
+            not configs['data_params']['path_test_result']:
         path_result = configs['data_params']['path_test'] + '.result'
     else:
         path_result = configs['data_params']['path_test_result']
@@ -573,12 +572,32 @@ def main():
     if opts.train:  # train
         # 判断是否需要预处理
         if opts.preprocess:
+            logger.info("Start Preprocess")
             preprocessing(configs)
         # 训练
+        logger.info("Start Training")
         train_model(configs)
     else:  # test
+        logger.info("Start Testing")
         test_model(configs)
 
 
 if __name__ == '__main__':
+    # create logger with 'Logger_SLTK'
+    logger = logging.getLogger('Logger_SLTK')
+    logger.setLevel(logging.DEBUG)
+    # create file handler which logs even debug messages
+    fh = logging.FileHandler('SLTK.log')
+    fh.setLevel(logging.DEBUG)
+    # create console handler with a higher log level
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.ERROR)
+    # create formatter and add it to the handlers
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    fh.setFormatter(formatter)
+    ch.setFormatter(formatter)
+    # add the handlers to the logger
+    logger.addHandler(fh)
+    logger.addHandler(ch)
+
     main()

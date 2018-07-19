@@ -22,7 +22,7 @@ data_params:
 
   # 预训练特征向量路径, 按feature_names顺序设置, 没有预训练向量则设为null
   path_pretrain:
-    - ./data/resources/glove.6B.100d.txt  # 格式为bin或txt
+    - ./data/resources/gigaword_chn.all.a2b.uni.ite50.vec.txt # 格式为bin或txt
     - null
     - null
 
@@ -34,7 +34,7 @@ data_params:
 model_params:
 
   # embedding parameters, 若提供了path_pretrain参数, 则以预训练维度为准
-  embed_sizes: [100]
+  embed_sizes: [50]
   # 是否更新feature embedding table
   require_grads: [true]
 

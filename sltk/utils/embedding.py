@@ -19,6 +19,8 @@ def load_embed_with_gensim(path_embed):
         word_vectors = KeyedVectors.load_word2vec_format(path_embed, binary=True)
     elif path_embed.endswith('txt'):
         word_vectors = KeyedVectors.load_word2vec_format(path_embed, binary=False)
+    elif path_embed.endswith('vec'):
+        word_vectors = KeyedVectors.load_word2vec_format(path_embed, binary=False)
     else:
         raise ValueError('`path_embed` must be `bin` or `txt` file!')
     return word_vectors, word_vectors.vector_size
@@ -37,7 +39,7 @@ def build_word_embed(word2id_dict, path_embed, seed=137):
         unknown_count: int, 未匹配的词数
     """
     import numpy as np
-    assert path_embed.endswith('bin') or path_embed.endswith('txt')
+    assert path_embed.endswith('bin') or path_embed.endswith('txt') or path_embed.endswith('vec')
     word2vec_model, word_dim = load_embed_with_gensim(path_embed)
     word_count = len(word2id_dict) + 1  # 0 is for padding value
     np.random.seed(seed)
